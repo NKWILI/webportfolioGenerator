@@ -248,6 +248,70 @@ function App() {
         .skill-card:hover svg {
           transform: scale(1.05) rotate(3deg);
         }
+        
+        /* Experience Timeline Animations */
+        @keyframes experienceFadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        @media (min-width: 768px) {
+          @keyframes experienceFadeInLeft {
+            from {
+              opacity: 0;
+              transform: translateX(-24px);
+            }
+            to {
+              opacity: 1;
+              transform: translateX(0);
+            }
+          }
+          
+          .experience-card:nth-child(odd) {
+            animation: experienceFadeInLeft 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+          }
+          
+          .experience-card:nth-child(even) {
+            animation: experienceFadeInLeft 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+          }
+        }
+        
+        @media (max-width: 767px) {
+          .experience-card {
+            animation: experienceFadeIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+          }
+        }
+        
+        /* Line clamp utilities for text truncation */
+        .line-clamp-2 {
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+        
+        .line-clamp-3 {
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+        
+        /* Details/Summary styling for Read More */
+        details summary {
+          position: relative;
+        }
+        
+        details[open] summary .line-clamp-2,
+        details[open] summary .line-clamp-3 {
+          display: none;
+        }
     </style>
 </head>
 <body>

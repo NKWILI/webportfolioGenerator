@@ -4,10 +4,59 @@ import React, { useState, useEffect } from 'react';
 // Icons from the lucide-react library for a clean UI.
 import { 
   Mail, Phone, MapPin, Globe, Github, Linkedin, ExternalLink, Calendar, 
-  GraduationCap, Briefcase, Download, Code, Terminal
+  GraduationCap, Briefcase, Download, Code, Terminal, Building2, Factory,
+  Laptop, Award, TrendingUp, ArrowUpRight
 } from 'lucide-react';
 // Import Simple Icons for real technology logos
 import * as SimpleIcons from 'simple-icons';
+
+/**
+ * Utility Functions for Duration Calculation
+ */
+
+// Calculate duration between two dates in "X yrs Y mos" format
+const calculateDuration = (startDate, endDate) => {
+  const start = new Date(startDate);
+  const end = endDate === 'Present' || !endDate ? new Date() : new Date(endDate);
+  
+  let years = end.getFullYear() - start.getFullYear();
+  let months = end.getMonth() - start.getMonth();
+  
+  if (months < 0) {
+    years--;
+    months += 12;
+  }
+  
+  const parts = [];
+  if (years > 0) parts.push(`${years} yr${years > 1 ? 's' : ''}`);
+  if (months > 0) parts.push(`${months} mo${months > 1 ? 's' : ''}`);
+  
+  return parts.length > 0 ? parts.join(' ') : '1 mo';
+};
+
+// Get industry icon based on company name or industry type
+const getIndustryIcon = (companyName = '') => {
+  const name = companyName.toLowerCase();
+  
+  // Tech companies
+  if (name.includes('tech') || name.includes('soft') || name.includes('digital') || 
+      name.includes('labs') || name.includes('innovations')) {
+    return Laptop;
+  }
+  
+  // Startups
+  if (name.includes('startup') || name.includes('xyz')) {
+    return TrendingUp;
+  }
+  
+  // Manufacturing/Industrial
+  if (name.includes('factory') || name.includes('manufacturing') || name.includes('industrial')) {
+    return Factory;
+  }
+  
+  // Default to building
+  return Building2;
+};
 
 /**
  * Utility Functions for Skills Section
@@ -350,6 +399,70 @@ const PortfolioPreview = ({ portfolioData, theme = 'light' }) => {
           transition-property: transform, color, opacity;
           transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
         }
+        
+        /* Experience Timeline Animations */
+        @keyframes experienceFadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        @media (min-width: 768px) {
+          @keyframes experienceFadeInLeft {
+            from {
+              opacity: 0;
+              transform: translateX(-24px);
+            }
+            to {
+              opacity: 1;
+              transform: translateX(0);
+            }
+          }
+          
+          .experience-card:nth-child(odd) {
+            animation: experienceFadeInLeft 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+          }
+          
+          .experience-card:nth-child(even) {
+            animation: experienceFadeInLeft 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+          }
+        }
+        
+        @media (max-width: 767px) {
+          .experience-card {
+            animation: experienceFadeIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+          }
+        }
+        
+        /* Line clamp utilities for text truncation */
+        .line-clamp-2 {
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+        
+        .line-clamp-3 {
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+        
+        /* Details/Summary styling for Read More */
+        details summary {
+          position: relative;
+        }
+        
+        details[open] summary .line-clamp-2,
+        details[open] summary .line-clamp-3 {
+          display: none;
+        }
       `}</style>
       
       {/* Navigation Bar: sticky to the top of the page. */}
@@ -576,35 +689,192 @@ const PortfolioPreview = ({ portfolioData, theme = 'light' }) => {
       {/* Experience Section: Renders only if there is work experience data. */}
       {portfolioData.experience && portfolioData.experience.length > 0 && (
         <section id="experience" className="mb-12">
-          <h2 className={`text-2xl font-semibold mb-6 ${currentTheme.accent} border-b ${currentTheme.border} pb-2 flex items-center`}>
+          <h2 className={`text-2xl font-semibold mb-8 ${currentTheme.accent} border-b ${currentTheme.border} pb-2 flex items-center`}>
             <Briefcase size={24} className="mr-2" />
             Work Experience
           </h2>
-          <div className="space-y-8">
-            {/* Map over the experience array and render each job in a card. */}
-            {portfolioData.experience.map((exp, index) => (
-              <div key={index} className={`${currentTheme.cardBg} p-6 rounded-lg ${currentTheme.border} border`}>
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-xl font-semibold">{exp.position}</h3>
-                  <span className={`${currentTheme.textSecondary} text-sm flex items-center`}>
-                    <Calendar size={14} className="mr-1" />
-                    {exp.duration}
-                  </span>
-                </div>
-                <p className={`${currentTheme.accent} font-medium mb-1`}>{exp.company}</p>
-                {exp.location && (
-                  <p className={`${currentTheme.textSecondary} text-sm mb-3 flex items-center`}>
-                    <MapPin size={14} className="mr-1" />
-                    {exp.location}
-                  </p>
-                )}
-                {exp.description && (
-                  <p className={`${currentTheme.textSecondary} leading-relaxed`}>
-                    {exp.description}
-                  </p>
-                )}
-              </div>
-            ))}
+          
+          {/* Timeline Container - relative positioning for the vertical line */}
+          <div className="relative">
+            {/* Vertical Timeline Line - hidden on mobile, visible on desktop */}
+            <div className={`
+              hidden md:block absolute left-[36px] top-0 bottom-0 w-0.5 
+              ${theme === 'dark' ? 'bg-gray-700' : theme === 'synthwave' ? 'bg-pink-500/30' : 'bg-gray-200'}
+            `} />
+            
+            {/* Experience Cards */}
+            <div className="space-y-8 md:space-y-10">
+              {portfolioData.experience.map((exp, index) => {
+                const IconComponent = getIndustryIcon(exp.company);
+                const duration = calculateDuration(
+                  exp.duration?.split(' - ')[0] || exp.duration,
+                  exp.duration?.split(' - ')[1] || 'Present'
+                );
+                const isCurrent = exp.duration?.includes('Present') || false;
+                
+                return (
+                  <div
+                    key={index}
+                    className="experience-card relative"
+                    style={{
+                      animationDelay: `${index * 60}ms`,
+                      animationFillMode: 'backwards'
+                    }}
+                  >
+                    {/* Timeline Dot & Date Badge - Desktop Only */}
+                    <div className="hidden md:flex absolute left-0 top-6 items-center">
+                      {/* Dot */}
+                      <div className={`
+                        w-[73px] h-[73px] rounded-full flex items-center justify-center
+                        ${currentTheme.cardBg} border-4 ${currentTheme.border}
+                        ${isCurrent ? `ring-2 ${currentTheme.accent} ring-opacity-30` : ''}
+                        transition-all duration-200
+                      `}>
+                        <IconComponent 
+                          size={32} 
+                          className={`${currentTheme.accent}`}
+                          strokeWidth={1.5}
+                        />
+                      </div>
+                    </div>
+                    
+                    {/* Card Content */}
+                    <div className={`
+                      ml-0 md:ml-[120px]
+                      ${currentTheme.cardBg} 
+                      border-2 ${currentTheme.border}
+                      rounded-xl p-5 md:p-6
+                      shadow-sm
+                      transition-all duration-200 ease-out
+                      hover:-translate-y-0.5 hover:scale-[1.01]
+                      hover:shadow-lg hover:ring-2 ${currentTheme.accent} hover:ring-opacity-20
+                      ${isCurrent ? `ring-1 ${currentTheme.accent} ring-opacity-30` : ''}
+                    `}>
+                      {/* Header Row */}
+                      <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-2 md:gap-4 mb-3">
+                        <div className="flex-1">
+                          {/* Position Title */}
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className={`text-lg md:text-xl font-semibold ${currentTheme.text}`}>
+                              {exp.position}
+                            </h3>
+                            {isCurrent && (
+                              <span className={`
+                                px-2 py-0.5 text-xs font-medium rounded-full
+                                ${theme === 'dark' ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 
+                                  theme === 'synthwave' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' : 
+                                  'bg-green-50 text-green-700 border border-green-200'}
+                              `}>
+                                Present
+                              </span>
+                            )}
+                          </div>
+                          
+                          {/* Company Name */}
+                          <p className={`${currentTheme.accent} font-medium text-base md:text-lg mb-1`}>
+                            {exp.company}
+                          </p>
+                          
+                          {/* Location */}
+                          {exp.location && (
+                            <p className={`${currentTheme.textSecondary} text-sm flex items-center gap-1`}>
+                              <MapPin size={14} />
+                              {exp.location}
+                            </p>
+                          )}
+                        </div>
+                        
+                        {/* Duration with Calculated Time */}
+                        <div className={`
+                          ${currentTheme.textSecondary} text-sm md:text-right
+                          flex md:flex-col items-center md:items-end gap-2
+                        `}>
+                          <div className="flex items-center gap-1">
+                            <Calendar size={14} />
+                            <span>{exp.duration}</span>
+                          </div>
+                          <span className={`text-xs ${currentTheme.accent} font-medium`}>
+                            • {duration}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      {/* Description with Details/Summary for "Read More" */}
+                      {exp.description && (
+                        <details className="group mt-4" open={exp.description.length < 200}>
+                          <summary className={`
+                            ${currentTheme.textSecondary} leading-relaxed cursor-pointer
+                            list-none
+                          `}>
+                            <div className="line-clamp-3 md:line-clamp-2">
+                              {exp.description}
+                            </div>
+                            <span className={`
+                              inline-flex items-center gap-1 mt-2 text-sm font-medium
+                              ${currentTheme.accent} hover:underline
+                              group-open:hidden
+                            `}>
+                              Read more <ArrowUpRight size={14} />
+                            </span>
+                          </summary>
+                          <div className={`${currentTheme.textSecondary} leading-relaxed mt-2`}>
+                            {exp.description}
+                            <span className={`
+                              inline-flex items-center gap-1 ml-2 text-sm font-medium
+                              ${currentTheme.accent} hover:underline cursor-pointer
+                            `}>
+                              Show less
+                            </span>
+                          </div>
+                        </details>
+                      )}
+                      
+                      {/* Tech Stack Tags (if available in future) */}
+                      {exp.techStack && exp.techStack.length > 0 && (
+                        <div className="mt-4 flex flex-wrap gap-2">
+                          {exp.techStack.map((tech, techIndex) => (
+                            <span
+                              key={techIndex}
+                              className={`
+                                px-2.5 py-1 text-xs font-medium rounded-full
+                                ${currentTheme.border} border
+                                ${theme === 'dark' ? 'bg-white/5' : theme === 'synthwave' ? 'bg-black/20' : 'bg-gray-50'}
+                                ${currentTheme.textSecondary}
+                                hover:${currentTheme.accent} transition-colors
+                              `}
+                            >
+                              {tech}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      
+                      {/* Achievement Highlights (if available in future) */}
+                      {exp.achievements && exp.achievements.length > 0 && (
+                        <div className="mt-4 space-y-2">
+                          {exp.achievements.slice(0, 2).map((achievement, achIndex) => (
+                            <div
+                              key={achIndex}
+                              className={`
+                                flex items-start gap-2 px-3 py-2 rounded-lg
+                                ${theme === 'dark' ? 'bg-green-500/10 border border-green-500/20' :
+                                  theme === 'synthwave' ? 'bg-cyan-500/10 border border-cyan-500/20' :
+                                  'bg-green-50 border border-green-200'}
+                              `}
+                            >
+                              <Award size={14} className="mt-0.5 shrink-0 text-green-600" />
+                              <span className={`text-xs ${currentTheme.textSecondary}`}>
+                                {achievement}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </section>
       )}
