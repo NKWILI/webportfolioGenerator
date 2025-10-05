@@ -2,7 +2,267 @@
 // React hooks for state and lifecycle management.
 import React, { useState, useEffect } from 'react';
 // Icons from the lucide-react library for a clean UI.
-import { Mail, Phone, MapPin, Globe, Github, Linkedin, ExternalLink, Calendar, GraduationCap, Briefcase, Download } from 'lucide-react';
+import { 
+  Mail, Phone, MapPin, Globe, Github, Linkedin, ExternalLink, Calendar, 
+  GraduationCap, Briefcase, Download, Code, Terminal
+} from 'lucide-react';
+// Import Simple Icons for real technology logos
+import * as SimpleIcons from 'simple-icons';
+
+/**
+ * Utility Functions for Skills Section
+ */
+
+// Helper component to render Simple Icons as SVG
+const SimpleIconSVG = ({ icon, size = 24, className = '' }) => {
+  if (!icon) return null;
+  
+  return (
+    <svg
+      role="img"
+      viewBox="0 0 24 24"
+      width={size}
+      height={size}
+      className={className}
+      fill={`#${icon.hex}`}
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <title>{icon.title}</title>
+      <path d={icon.path} />
+    </svg>
+  );
+};
+
+// Map skill names to Simple Icons (returns icon data object or null)
+const getSkillIcon = (skillName) => {
+  const skill = skillName.toLowerCase().trim();
+  
+  // Direct mappings to Simple Icons
+  // Frontend Frameworks & Libraries
+  if (skill === 'react' || skill === 'reactjs') return SimpleIcons.siReact;
+  if (skill === 'vue' || skill === 'vue.js' || skill === 'vuejs') return SimpleIcons.siVuedotjs;
+  if (skill === 'angular' || skill === 'angularjs') return SimpleIcons.siAngular;
+  if (skill === 'svelte' || skill === 'sveltejs') return SimpleIcons.siSvelte;
+  if (skill === 'next' || skill === 'next.js' || skill === 'nextjs') return SimpleIcons.siNextdotjs;
+  if (skill === 'nuxt' || skill === 'nuxt.js' || skill === 'nuxtjs') return SimpleIcons.siNuxtdotjs;
+  if (skill === 'gatsby' || skill === 'gatsbyjs') return SimpleIcons.siGatsby;
+  if (skill === 'ember' || skill === 'ember.js' || skill === 'emberjs') return SimpleIcons.siEmberdotjs;
+  
+  // Languages
+  if (skill === 'javascript' || skill === 'js') return SimpleIcons.siJavascript;
+  if (skill === 'typescript' || skill === 'ts') return SimpleIcons.siTypescript;
+  if (skill === 'python') return SimpleIcons.siPython;
+  if (skill === 'java') return SimpleIcons.siOracle;
+  if (skill === 'c#' || skill === 'csharp') return SimpleIcons.siCsharp;
+  if (skill === 'c++' || skill === 'cpp') return SimpleIcons.siCplusplus;
+  if (skill === 'c') return SimpleIcons.siC;
+  if (skill === 'php') return SimpleIcons.siPhp;
+  if (skill === 'ruby') return SimpleIcons.siRuby;
+  if (skill === 'go' || skill === 'golang') return SimpleIcons.siGo;
+  if (skill === 'rust') return SimpleIcons.siRust;
+  if (skill === 'swift') return SimpleIcons.siSwift;
+  if (skill === 'kotlin') return SimpleIcons.siKotlin;
+  if (skill === 'scala') return SimpleIcons.siScala;
+  if (skill === 'r') return SimpleIcons.siR;
+  
+  // Styling & Markup
+  if (skill === 'html' || skill === 'html5') return SimpleIcons.siHtml5;
+  if (skill === 'css' || skill === 'css3') return SimpleIcons.siCss3;
+  if (skill === 'sass' || skill === 'scss') return SimpleIcons.siSass;
+  if (skill === 'tailwind' || skill === 'tailwind css' || skill === 'tailwindcss') return SimpleIcons.siTailwindcss;
+  if (skill === 'bootstrap') return SimpleIcons.siBootstrap;
+  if (skill === 'materialui' || skill === 'material-ui' || skill === 'mui') return SimpleIcons.siMui;
+  
+  // Backend Frameworks
+  if (skill === 'node' || skill === 'node.js' || skill === 'nodejs') return SimpleIcons.siNodedotjs;
+  if (skill === 'express' || skill === 'express.js' || skill === 'expressjs') return SimpleIcons.siExpress;
+  if (skill === 'nestjs' || skill === 'nest.js' || skill === 'nest') return SimpleIcons.siNestjs;
+  if (skill === 'django') return SimpleIcons.siDjango;
+  if (skill === 'flask') return SimpleIcons.siFlask;
+  if (skill === 'fastapi') return SimpleIcons.siFastapi;
+  if (skill === 'spring' || skill === 'spring boot' || skill === 'springboot') return SimpleIcons.siSpring;
+  if (skill === 'laravel') return SimpleIcons.siLaravel;
+  if (skill === 'rails' || skill === 'ruby on rails') return SimpleIcons.siRubyonrails;
+  if (skill === '.net' || skill === 'dotnet' || skill === 'asp.net') return SimpleIcons.siDotnet;
+  
+  // Databases
+  if (skill === 'mysql') return SimpleIcons.siMysql;
+  if (skill === 'postgresql' || skill === 'postgres') return SimpleIcons.siPostgresql;
+  if (skill === 'mongodb' || skill === 'mongo') return SimpleIcons.siMongodb;
+  if (skill === 'redis') return SimpleIcons.siRedis;
+  if (skill === 'sqlite') return SimpleIcons.siSqlite;
+  if (skill === 'mariadb') return SimpleIcons.siMariadb;
+  if (skill === 'firebase') return SimpleIcons.siFirebase;
+  if (skill === 'supabase') return SimpleIcons.siSupabase;
+  if (skill === 'dynamodb' || skill === 'dynamo') return SimpleIcons.siAmazondynamodb;
+  if (skill === 'cassandra') return SimpleIcons.siApachecassandra;
+  if (skill === 'elasticsearch') return SimpleIcons.siElasticsearch;
+  
+  // DevOps & Cloud
+  if (skill === 'docker') return SimpleIcons.siDocker;
+  if (skill === 'kubernetes' || skill === 'k8s') return SimpleIcons.siKubernetes;
+  if (skill === 'aws' || skill === 'amazon web services') return SimpleIcons.siAmazonaws;
+  if (skill === 'azure' || skill === 'microsoft azure') return SimpleIcons.siMicrosoftazure;
+  if (skill === 'gcp' || skill === 'google cloud' || skill === 'google cloud platform') return SimpleIcons.siGooglecloud;
+  if (skill === 'heroku') return SimpleIcons.siHeroku;
+  if (skill === 'vercel') return SimpleIcons.siVercel;
+  if (skill === 'netlify') return SimpleIcons.siNetlify;
+  if (skill === 'digitalocean') return SimpleIcons.siDigitalocean;
+  
+  // Version Control
+  if (skill === 'git') return SimpleIcons.siGit;
+  if (skill === 'github') return SimpleIcons.siGithub;
+  if (skill === 'gitlab') return SimpleIcons.siGitlab;
+  if (skill === 'bitbucket') return SimpleIcons.siBitbucket;
+  
+  // CI/CD
+  if (skill === 'jenkins') return SimpleIcons.siJenkins;
+  if (skill === 'github actions' || skill === 'githubactions') return SimpleIcons.siGithubactions;
+  if (skill === 'gitlab ci' || skill === 'gitlabci') return SimpleIcons.siGitlab;
+  if (skill === 'circleci' || skill === 'circle ci') return SimpleIcons.siCircleci;
+  if (skill === 'travis' || skill === 'travis ci' || skill === 'travisci') return SimpleIcons.siTravisci;
+  
+  // Testing
+  if (skill === 'jest') return SimpleIcons.siJest;
+  if (skill === 'mocha') return SimpleIcons.siMocha;
+  if (skill === 'cypress') return SimpleIcons.siCypress;
+  if (skill === 'selenium') return SimpleIcons.siSelenium;
+  if (skill === 'playwright') return SimpleIcons.siPlaywright;
+  if (skill === 'vitest') return SimpleIcons.siVitest;
+  
+  // Mobile
+  if (skill === 'react native' || skill === 'reactnative') return SimpleIcons.siReact;
+  if (skill === 'flutter') return SimpleIcons.siFlutter;
+  if (skill === 'android') return SimpleIcons.siAndroid;
+  if (skill === 'ios') return SimpleIcons.siIos;
+  
+  // APIs & Data
+  if (skill === 'graphql') return SimpleIcons.siGraphql;
+  if (skill === 'rest' || skill === 'rest api' || skill === 'rest apis') return null; // No specific icon, will use fallback
+  if (skill === 'api' || skill === 'apis') return null; // No specific icon, will use fallback
+  
+  // Build Tools
+  if (skill === 'webpack') return SimpleIcons.siWebpack;
+  if (skill === 'vite') return SimpleIcons.siVite;
+  if (skill === 'rollup') return SimpleIcons.siRollupdotjs;
+  if (skill === 'parcel') return SimpleIcons.siParcel;
+  if (skill === 'gulp') return SimpleIcons.siGulp;
+  if (skill === 'grunt') return SimpleIcons.siGrunt;
+  
+  // Design Tools
+  if (skill === 'figma') return SimpleIcons.siFigma;
+  if (skill === 'sketch') return SimpleIcons.siSketch;
+  if (skill === 'adobe xd' || skill === 'xd') return SimpleIcons.siAdobexd;
+  if (skill === 'photoshop') return SimpleIcons.siAdobephotoshop;
+  if (skill === 'illustrator') return SimpleIcons.siAdobeillustrator;
+  
+  // Other Popular Tools
+  if (skill === 'postman') return SimpleIcons.siPostman;
+  if (skill === 'insomnia') return SimpleIcons.siInsomnia;
+  if (skill === 'jira') return SimpleIcons.siJira;
+  if (skill === 'confluence') return SimpleIcons.siConfluence;
+  if (skill === 'slack') return SimpleIcons.siSlack;
+  if (skill === 'discord') return SimpleIcons.siDiscord;
+  if (skill === 'notion') return SimpleIcons.siNotion;
+  if (skill === 'trello') return SimpleIcons.siTrello;
+  
+  // If no match found, return null (will use fallback icon)
+  return null;
+};
+
+// Detect skill category based on name
+const getSkillCategory = (skillName) => {
+  const skill = skillName.toLowerCase();
+  
+  // Frontend
+  if (skill.includes('react') || skill.includes('vue') || skill.includes('angular') || 
+      skill.includes('html') || skill.includes('css') || skill.includes('tailwind') ||
+      skill.includes('sass') || skill.includes('next') || skill.includes('svelte') ||
+      skill.includes('typescript') && !skill.includes('node')) {
+    return 'frontend';
+  }
+  
+  // Backend
+  if (skill.includes('node') || skill.includes('express') || skill.includes('python') ||
+      skill.includes('django') || skill.includes('flask') || skill.includes('java') ||
+      skill.includes('spring') || skill.includes('php') || skill.includes('laravel') ||
+      skill.includes('ruby') || skill.includes('rails') || skill.includes('go') ||
+      skill.includes('rust') || skill.includes('c#') || skill.includes('.net') ||
+      skill.includes('sql') || skill.includes('postgres') || skill.includes('mysql') ||
+      skill.includes('mongo') || skill.includes('redis') || skill.includes('database')) {
+    return 'backend';
+  }
+  
+  // Testing
+  if (skill.includes('jest') || skill.includes('mocha') || skill.includes('test') ||
+      skill.includes('cypress') || skill.includes('selenium') || skill.includes('junit')) {
+    return 'testing';
+  }
+  
+  // Design/UX
+  if (skill.includes('figma') || skill.includes('sketch') || skill.includes('adobe') ||
+      skill.includes('design') || skill.includes('ux') || skill.includes('ui')) {
+    return 'design';
+  }
+  
+  // Tools/DevOps (default for infrastructure tools)
+  if (skill.includes('docker') || skill.includes('kubernetes') || skill.includes('aws') ||
+      skill.includes('azure') || skill.includes('gcp') || skill.includes('git') ||
+      skill.includes('ci/cd') || skill.includes('jenkins') || skill.includes('cloud')) {
+    return 'tools';
+  }
+  
+  // Default to frontend for programming languages
+  return 'frontend';
+};
+
+// Get category color classes (for borders and accents)
+const getCategoryColors = (category, theme) => {
+  const colorMap = {
+    frontend: {
+      border: 'border-indigo-500/50',
+      hoverBorder: 'hover:border-indigo-500',
+      hoverRing: 'hover:ring-indigo-500/20',
+      iconColor: 'text-indigo-500',
+      hoverIconColor: 'hover:text-indigo-600',
+      bg: theme === 'dark' ? 'bg-indigo-500/5' : theme === 'synthwave' ? 'bg-indigo-500/10' : 'bg-indigo-50'
+    },
+    backend: {
+      border: 'border-emerald-500/50',
+      hoverBorder: 'hover:border-emerald-500',
+      hoverRing: 'hover:ring-emerald-500/20',
+      iconColor: 'text-emerald-500',
+      hoverIconColor: 'hover:text-emerald-600',
+      bg: theme === 'dark' ? 'bg-emerald-500/5' : theme === 'synthwave' ? 'bg-emerald-500/10' : 'bg-emerald-50'
+    },
+    tools: {
+      border: 'border-amber-500/50',
+      hoverBorder: 'hover:border-amber-500',
+      hoverRing: 'hover:ring-amber-500/20',
+      iconColor: 'text-amber-500',
+      hoverIconColor: 'hover:text-amber-600',
+      bg: theme === 'dark' ? 'bg-amber-500/5' : theme === 'synthwave' ? 'bg-amber-500/10' : 'bg-amber-50'
+    },
+    testing: {
+      border: 'border-fuchsia-500/50',
+      hoverBorder: 'hover:border-fuchsia-500',
+      hoverRing: 'hover:ring-fuchsia-500/20',
+      iconColor: 'text-fuchsia-500',
+      hoverIconColor: 'hover:text-fuchsia-600',
+      bg: theme === 'dark' ? 'bg-fuchsia-500/5' : theme === 'synthwave' ? 'bg-fuchsia-500/10' : 'bg-fuchsia-50'
+    },
+    design: {
+      border: 'border-sky-500/50',
+      hoverBorder: 'hover:border-sky-500',
+      hoverRing: 'hover:ring-sky-500/20',
+      iconColor: 'text-sky-500',
+      hoverIconColor: 'hover:text-sky-600',
+      bg: theme === 'dark' ? 'bg-sky-500/5' : theme === 'synthwave' ? 'bg-sky-500/10' : 'bg-sky-50'
+    }
+  };
+  
+  return colorMap[category] || colorMap.frontend;
+};
 
 /**
  * PortfolioPreview component
@@ -68,6 +328,30 @@ const PortfolioPreview = ({ portfolioData, theme = 'light' }) => {
   return (
     // Root container for the portfolio preview.
     <div id="portfolio-preview" className={`${currentTheme.background} ${currentTheme.text} min-h-screen font-sans w-full`}>
+      {/* Inline styles for skill card animations */}
+      <style>{`
+        @keyframes skillFadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(10px) scale(0.95);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+        
+        .skill-card {
+          animation: skillFadeIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        /* Ensure smooth transitions on all interactive elements */
+        .skill-card * {
+          transition-property: transform, color, opacity;
+          transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+      `}</style>
+      
       {/* Navigation Bar: sticky to the top of the page. */}
       <nav className={`sticky top-0 z-50 ${currentTheme.cardBg} backdrop-blur-md bg-opacity-95 ${currentTheme.border} border-b mb-8`}>
         <div className="w-full px-6 md:px-10 lg:px-16">
@@ -222,18 +506,69 @@ const PortfolioPreview = ({ portfolioData, theme = 'light' }) => {
       {portfolioData.skills && portfolioData.skills.length > 0 && (
         <section id="skills" className="mb-12">
           <h2 className={`text-2xl font-semibold mb-6 ${currentTheme.accent} border-b ${currentTheme.border} pb-2`}>
-            Skills
+            Skills & Technologies
           </h2>
-          <div className="flex flex-wrap gap-3">
-            {/* Map over the skills array and render each one as a styled badge. */}
-            {portfolioData.skills.map((skill, index) => (
-              <span
-                key={index}
-                className={`px-4 py-2 ${currentTheme.cardBg} ${currentTheme.border} border rounded-full text-sm font-medium`}
-              >
-                {skill}
-              </span>
-            ))}
+          
+          {/* Skills Grid - Responsive columns */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
+            {portfolioData.skills.map((skill, index) => {
+              const category = getSkillCategory(skill);
+              const colors = getCategoryColors(category, theme);
+              const simpleIcon = getSkillIcon(skill);
+              
+              return (
+                <div
+                  key={index}
+                  data-skill-category={category}
+                  className={`
+                    group relative
+                    ${currentTheme.cardBg} ${colors.bg}
+                    border-2 ${colors.border} ${colors.hoverBorder}
+                    rounded-lg p-4
+                    transition-all duration-200 ease-out
+                    hover:shadow-lg hover:-translate-y-0.5 hover:scale-110
+                    hover:ring-4 ${colors.hoverRing}
+                    skill-card
+                  `}
+                  style={{
+                    animationDelay: `${index * 40}ms`,
+                    animationFillMode: 'backwards'
+                  }}
+                >
+                  {/* Icon - positioned differently on mobile vs desktop */}
+                  <div className="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-3">
+                    <div className={`
+                      transition-all duration-200
+                      group-hover:scale-105 group-hover:rotate-3
+                      shrink-0
+                    `}>
+                      {simpleIcon ? (
+                        <SimpleIconSVG 
+                          icon={simpleIcon} 
+                          size={24}
+                          className="transition-transform duration-200"
+                        />
+                      ) : (
+                        // Fallback to Lucide Terminal icon if no Simple Icon found
+                        <Terminal size={24} strokeWidth={2} className={`${colors.iconColor}`} />
+                      )}
+                    </div>
+                    
+                    {/* Skill Name */}
+                    <div className="flex-1 min-w-0">
+                      <h3 className={`
+                        font-semibold text-sm md:text-base
+                        ${currentTheme.text}
+                        truncate
+                        transition-colors duration-200
+                      `}>
+                        {skill}
+                      </h3>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </section>
       )}

@@ -150,6 +150,10 @@ function App() {
       }
     });
 
+    // Convert lucide-react SVG icons to inline SVG (they're already rendered)
+    // Lucide icons are rendered as SVGs by React, so they'll be preserved in the clone
+    // No additional conversion needed - the SVGs are already in the DOM
+
     const htmlContent = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -209,7 +213,40 @@ function App() {
             max-width: 100rem;
             margin-left: auto;
             margin-right: auto;
-            
+        }
+        
+        /* Skills Section Enhanced Animations */
+        @keyframes skillFadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(10px) scale(0.95);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+        
+        .skill-card {
+          animation: skillFadeIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        /* Smooth transitions for all skill card elements */
+        .skill-card * {
+          transition-property: transform, color, opacity;
+          transition-duration: 200ms;
+          transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Ensure hover effects work in static HTML */
+        .skill-card:hover {
+          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+          transform: translateY(-2px) scale(1.1);
+        }
+        
+        /* Icon hover effects */
+        .skill-card:hover svg {
+          transform: scale(1.05) rotate(3deg);
         }
     </style>
 </head>
