@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+/* Smooth scrolling for navigation */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Additional smooth scroll for webkit browsers */
+* {
+  scroll-behavior: smooth;
+}
+
+/* Ensure smooth transitions */
+a {
+  transition: all 0.3s ease;
+}
