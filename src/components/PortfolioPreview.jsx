@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   Mail, Phone, MapPin, Globe, Github, Linkedin, ExternalLink, Calendar, 
   GraduationCap, Briefcase, Download, Code, Terminal, Building2, Factory,
-  Laptop, Award, TrendingUp, ArrowUpRight
+  Laptop, Award, TrendingUp, ArrowUpRight, Users, Zap, Clock, CheckCircle
 } from 'lucide-react';
 // Import Simple Icons for real technology logos
 import * as SimpleIcons from 'simple-icons';
@@ -314,6 +314,33 @@ const getCategoryColors = (category, theme) => {
 };
 
 /**
+ * Utility Functions for Projects Section
+ */
+
+// Get achievement icon based on content
+const getAchievementIcon = (achievement) => {
+  const text = achievement.toLowerCase();
+  
+  if (text.includes('user') || text.includes('customer') || text.includes('people')) {
+    return Users;
+  }
+  if (text.includes('performance') || text.includes('faster') || text.includes('speed') || 
+      text.includes('improve') || text.includes('%')) {
+    return Zap;
+  }
+  if (text.includes('growth') || text.includes('increase') || text.includes('revenue') || 
+      text.includes('sales')) {
+    return TrendingUp;
+  }
+  if (text.includes('time') || text.includes('hour') || text.includes('day') || 
+      text.includes('save')) {
+    return Clock;
+  }
+  
+  return CheckCircle; // Default icon
+};
+
+/**
  * PortfolioPreview component
  * This component renders a complete portfolio page based on the data provided.
  * It supports multiple themes and is fully responsive.
@@ -462,6 +489,51 @@ const PortfolioPreview = ({ portfolioData, theme = 'light' }) => {
         details[open] summary .line-clamp-2,
         details[open] summary .line-clamp-3 {
           display: none;
+        }
+        
+        /* Project Card Animations */
+        @keyframes projectFadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(20px) scale(0.98);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+        
+        .project-card {
+          animation: projectFadeIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        /* Image zoom effect container */
+        .project-image-container {
+          overflow: hidden;
+          position: relative;
+        }
+        
+        .project-image {
+          transition: transform 500ms cubic-bezier(0.4, 0, 0.2, 1),
+                      filter 500ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .project-card:hover .project-image {
+          transform: scale(1.05);
+          filter: brightness(1.1);
+        }
+        
+        /* Gradient overlay on image hover */
+        .project-image-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
+          opacity: 0;
+          transition: opacity 300ms;
+        }
+        
+        .project-card:hover .project-image-overlay {
+          opacity: 1;
         }
       `}</style>
       
@@ -882,60 +954,136 @@ const PortfolioPreview = ({ portfolioData, theme = 'light' }) => {
       {/* Projects Section: Renders only if there are projects in the data. */}
       {portfolioData.projects && portfolioData.projects.length > 0 && (
         <section id="projects" className="mb-12">
-          <h2 className={`text-2xl font-semibold mb-6 ${currentTheme.accent} border-b ${currentTheme.border} pb-2`}>
+          <h2 className={`text-2xl font-semibold mb-8 ${currentTheme.accent} border-b ${currentTheme.border} pb-2`}>
             Projects
           </h2>
-          <div className="grid gap-6 md:grid-cols-2">
-            {/* Map over the projects array and render each one in a card. */}
+          
+          {/* 2-Column Responsive Grid */}
+          <div className="grid gap-6 md:gap-8 md:grid-cols-2">
             {portfolioData.projects.map((project, index) => (
-              <div key={index} className={`${currentTheme.cardBg} p-6 rounded-lg ${currentTheme.border} border`}>
-                <h3 className="text-xl font-semibold mb-3">{project.name}</h3>
-                {project.description && (
-                  <p className={`${currentTheme.textSecondary} mb-4 leading-relaxed`}>
-                    {project.description}
-                  </p>
-                )}
-                {/* Display technologies used if available. */}
-                {project.technologies && (
-                  <div className="mb-4">
-                    <div className="flex flex-wrap gap-2">
-                      {/* Split the comma-separated technologies string into an array and map over it. */}
-                      {project.technologies.split(',').map((tech, techIndex) => (
-                        <span
-                          key={techIndex}
-                          className={`px-2 py-1 text-xs ${currentTheme.accent} ${currentTheme.border} border rounded`}
-                        >
-                          {tech.trim()}
-                        </span>
-                      ))}
-                    </div>
+              <div
+                key={index}
+                className={`
+                  group project-card
+                  ${currentTheme.cardBg}
+                  border-2 ${currentTheme.border}
+                  rounded-xl overflow-hidden
+                  shadow-sm
+                  transition-all duration-200 ease-out
+                  hover:-translate-y-0.5 hover:scale-[1.02]
+                  hover:shadow-lg hover:ring-2 ${currentTheme.accent} hover:ring-opacity-20
+                `}
+                style={{
+                  animationDelay: `${index * 60}ms`,
+                  animationFillMode: 'backwards'
+                }}
+              >
+                {/* Project Image - Full Width at Top */}
+                {project.image ? (
+                  <div className="project-image-container aspect-video bg-gray-900">
+                    <img
+                      src={project.image}
+                      alt={project.name}
+                      className="project-image w-full h-full object-cover"
+                    />
+                    <div className="project-image-overlay" />
                   </div>
+                ) : (
+                  // Fallback gradient when no image provided
+                  <div className={`
+                    aspect-video 
+                    bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500
+                    ${theme === 'dark' ? 'opacity-40' : theme === 'synthwave' ? 'opacity-60' : 'opacity-30'}
+                  `} />
                 )}
-                <div className="flex gap-4">
-                  {/* Link to the live demo of the project. */}
-                  {project.link && (
-                    <a
-                      href={project.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`${currentTheme.accent} hover:underline flex items-center text-sm`}
-                    >
-                      <ExternalLink size={14} className="mr-1" />
-                      Live Demo
-                    </a>
+                
+                {/* Card Content */}
+                <div className="p-5 md:p-6">
+                  {/* Project Title */}
+                  <h3 className={`text-xl md:text-2xl font-semibold mb-3 ${currentTheme.text}`}>
+                    {project.name}
+                  </h3>
+                  
+                  {/* Description - Truncated to 3 lines */}
+                  {project.description && (
+                    <p className={`${currentTheme.textSecondary} mb-4 leading-relaxed line-clamp-3`}>
+                      {project.description}
+                    </p>
                   )}
-                  {/* Link to the project's source code on GitHub. */}
-                  {project.github && (
-                    <a
-                      href={project.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`${currentTheme.accent} hover:underline flex items-center text-sm`}
-                    >
-                      <Github size={14} className="mr-1" />
-                      Code
-                    </a>
+                  
+                  {/* Achievement Badges */}
+                  {project.achievements && (
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {(typeof project.achievements === 'string' 
+                        ? project.achievements.split(',').map(a => a.trim()).filter(a => a)
+                        : project.achievements
+                      ).slice(0, 2).map((achievement, achIndex) => {
+                        const IconComponent = getAchievementIcon(achievement);
+                        return (
+                          <div
+                            key={achIndex}
+                            className={`
+                              flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium
+                              ${theme === 'dark' ? 'bg-green-500/10 text-green-400 border border-green-500/20' :
+                                theme === 'synthwave' ? 'bg-cyan-500/10 text-cyan-300 border border-cyan-500/20' :
+                                'bg-green-50 text-green-700 border border-green-200'}
+                            `}
+                          >
+                            <IconComponent size={12} className="shrink-0" />
+                            <span>{achievement}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
                   )}
+                  
+                  {/* Technology Stack Pills */}
+                  {project.technologies && (
+                    <div className="mb-4">
+                      <div className="flex flex-wrap gap-2">
+                        {project.technologies.split(',').map((tech, techIndex) => (
+                          <span
+                            key={techIndex}
+                            className={`
+                              px-2.5 py-1 text-xs font-medium rounded-full
+                              ${currentTheme.border} border
+                              ${theme === 'dark' ? 'bg-white/5' : theme === 'synthwave' ? 'bg-black/20' : 'bg-gray-50'}
+                              ${currentTheme.textSecondary}
+                              hover:${currentTheme.accent} transition-colors
+                            `}
+                          >
+                            {tech.trim()}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Action Links - Separated by Border */}
+                  <div className={`flex gap-4 pt-4 border-t ${currentTheme.border}`}>
+                    {project.link && (
+                      <a
+                        href={project.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`${currentTheme.accent} hover:underline flex items-center gap-1.5 text-sm font-medium transition-colors`}
+                      >
+                        <ExternalLink size={16} />
+                        Live Demo
+                      </a>
+                    )}
+                    {project.github && (
+                      <a
+                        href={project.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`${currentTheme.accent} hover:underline flex items-center gap-1.5 text-sm font-medium transition-colors`}
+                      >
+                        <Github size={16} />
+                        View Code
+                      </a>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}

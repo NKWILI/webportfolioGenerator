@@ -250,7 +250,9 @@ const PortfolioForm = ({ portfolioData, setPortfolioData }) => {
               description: '',
               technologies: '',
               link: '',
-              github: ''
+              github: '',
+              image: null,
+              achievements: ''
             })}
           >
             <Plus size={16} className="mr-1" />
@@ -278,6 +280,57 @@ const PortfolioForm = ({ portfolioData, setPortfolioData }) => {
               onChange={(e) => updateArrayItem('projects', index, 'name', e.target.value)}
             />
             
+            {/* Project Image Upload */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Project Image/Screenshot
+              </label>
+              
+              {!project.image ? (
+                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                    <svg className="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                    <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                      <span className="font-semibold">Click to upload</span> or drag and drop
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">PNG, JPG, GIF up to 10MB</p>
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          updateArrayItem('projects', index, 'image', reader.result);
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                  />
+                </label>
+              ) : (
+                <div className="relative">
+                  <img 
+                    src={project.image} 
+                    alt="Preview" 
+                    className="w-full h-48 object-cover rounded-lg border-2 border-gray-300 dark:border-gray-600"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => updateArrayItem('projects', index, 'image', null)}
+                    className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium shadow-lg transition-colors"
+                  >
+                    Remove Image
+                  </button>
+                </div>
+              )}
+            </div>
+            
             <Textarea
               label="Description"
               placeholder="Describe what this project does and your role..."
@@ -291,6 +344,23 @@ const PortfolioForm = ({ portfolioData, setPortfolioData }) => {
               value={project.technologies}
               onChange={(e) => updateArrayItem('projects', index, 'technologies', e.target.value)}
             />
+            
+            {/* Achievements Field */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Achievements/Metrics
+                <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
+                  (Separate with commas, e.g., "10k+ users, 40% faster, 99.9% uptime")
+                </span>
+              </label>
+              <textarea
+                value={project.achievements || ''}
+                onChange={(e) => updateArrayItem('projects', index, 'achievements', e.target.value)}
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
+                rows="2"
+                placeholder="10k+ active users, 40% performance boost"
+              />
+            </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Input

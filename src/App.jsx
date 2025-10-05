@@ -77,6 +77,8 @@ function App() {
           "React, Node.js, Express, MongoDB, Stripe, AWS S3, Docker",
         link: "https://ecommerce-demo.alexjohnson.dev",
         github: "https://github.com/alexjohnson/ecommerce-platform",
+        image: null,
+        achievements: ["10k+ active users", "99.9% uptime"]
       },
       {
         name: "Task Management App",
@@ -86,6 +88,8 @@ function App() {
           "Next.js, TypeScript, PostgreSQL, Socket.io, Tailwind CSS",
         link: "https://taskapp.alexjohnson.dev",
         github: "https://github.com/alexjohnson/task-manager",
+        image: null,
+        achievements: ["5k+ teams", "40% faster workflows"]
       },
       {
         name: "Weather Analytics Dashboard",
@@ -94,6 +98,8 @@ function App() {
         technologies: "Vue.js, Python, FastAPI, D3.js, PostgreSQL, Redis",
         link: "https://weather-dashboard.alexjohnson.dev",
         github: "https://github.com/alexjohnson/weather-dashboard",
+        image: null,
+        achievements: ["1M+ API calls/day", "50% cost reduction"]
       },
       {
         name: "Open Source Library",
@@ -102,6 +108,8 @@ function App() {
         technologies: "TypeScript, Jest, Rollup, NPM",
         link: "https://npmjs.com/package/super-validator",
         github: "https://github.com/alexjohnson/super-validator",
+        image: null,
+        achievements: ["50k+ weekly downloads", "4.8/5 rating"]
       },
     ],
     education: [
@@ -311,6 +319,50 @@ function App() {
         details[open] summary .line-clamp-2,
         details[open] summary .line-clamp-3 {
           display: none;
+        }
+        
+        /* Project Card Animations */
+        @keyframes projectFadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(20px) scale(0.98);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+        
+        .project-card {
+          animation: projectFadeIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+          animation-fill-mode: backwards;
+        }
+        
+        .project-image-container {
+          overflow: hidden;
+          position: relative;
+        }
+        
+        .project-image {
+          transition: transform 500ms cubic-bezier(0.4, 0, 0.2, 1),
+                      filter 500ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .project-card:hover .project-image {
+          transform: scale(1.05);
+          filter: brightness(1.1);
+        }
+        
+        .project-image-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
+          opacity: 0;
+          transition: opacity 300ms;
+        }
+        
+        .project-card:hover .project-image-overlay {
+          opacity: 1;
         }
     </style>
 </head>
